@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 - Register User
+{% endblock %}
+
+{% block main %}
+
+<form method="POST" action="{{url_for('register_user')}}" class="registerUserForm">
+    {{register_user.csrf_token}}
+    <br>
+    {{register_user.username}}
+    <br>
+    {{register_user.password}}
+    <br>
+    <button type="submit" class = "submitButton">Register</button>
+
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class=flashes>
+    {% for message in messages %}
+    <a href="{{ url_for('login') }}">{{ message }}</a>
+    {% endfor %}
+    </div>
+  {% endif %}
+
+</form>
+
+
+{% endwith %}
+
+{% endblock %}
+

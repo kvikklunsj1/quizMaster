@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 - Admin login
+{% endblock %}
+
+{% block main %}
+
+<form method="POST" action="{{url_for('login')}}" class="login-form">
+    {{login.csrf_token}}
+    <br>
+    {{login.username}}
+    <br>
+    {{login.password}}
+    <br>
+    <button type="submit" class = "submitButton">Logg inn</button>
+    <a href="{{ url_for('register_admin') }}">Ikke registret? Klikk her.</a>
+</form>
+
+
+
+
+ 
+
+{% endblock %}

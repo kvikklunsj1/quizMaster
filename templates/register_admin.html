@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 - Registrer Admin
+{% endblock %}
+
+{% block main %}
+
+
+
+<form method="POST" action="{{url_for('register_admin')}}" class="regAdminForm">
+    {{register_admin.csrf_token}}
+    <br>
+    {{register_admin.username}}
+    <br>
+    {{register_admin.fornavn}}
+    <br>
+    {{register_admin.etternavn}}
+    <br>
+    {{register_admin.password}}
+    <br>
+    <button type="submit" class = "submitButton">Register admin</button>
+
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class=flashes>
+    {% for message in messages %}
+      <a href="{{ url_for('admin_login') }}">{{ message }}</a>
+    {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+</form>
+
+
+ 
+
+{% endblock %}
+

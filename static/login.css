@@ -1,0 +1,17 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+  
+}
+
+.textinput {
+    font-size: 25;
+    padding: 5px;
+
+}
+
+.submitButton{
+    font-size: 25px;
+    margin: 10px;
+}
+

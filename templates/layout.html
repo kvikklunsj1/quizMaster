@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'style.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='register_user.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='register_admin.css') }}">
+
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <div class = "navbar">
+            <ul class="navbar-ul">
+                <li class="nav-item-left"><a href="{{ url_for('home') }}">Quizmaster 2023</a></li>
+                <li class="nav-item-right"><a href="">Home</a></li>
+                <li class="nav-item-right"><a href="">Login</a></li>
+                <li class="nav-item-right"><a href="">User</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class = "main">
+        {% block main %} {% endblock %}
+        </div>
+    </main>
+    
+    <footer>
+        <div class = "footer">
+            <p>2023. All rights are not reserved &copy</p>
+        </div>
+    </footer>   
+</body>
+</html>

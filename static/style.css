@@ -1,0 +1,56 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+/* layout.html navbar */
+.navbar {
+    background-color: rgb(6, 6, 151);
+    color: white;
+}
+
+/* layout.html navbar */
+.navbar-ul {
+    display: flex;
+    list-style: none;
+    padding: 15px;
+
+}
+
+/* layout.html navbar */
+.nav-item-left {
+    margin-right: auto;
+    padding-left: 0px;
+}
+
+
+
+/* layout.html navbar */
+.navbar a {
+    padding: 10px;
+    font-size: 25px;
+    color: white;
+    text-decoration: none;
+}
+
+
+/* layout.html footer */
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgb(6, 6, 151);
+    color: white;
+    text-align: center;
+}
+
+.main {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}

@@ -1,0 +1,40 @@
+# more : https://robotninja.com/blog/introduction-using-selenium-docker-containers-end-end-testing/
+version: "3"
+services:
+ # www:
+  #  build:
+  #    context: .
+  #    dockerfile: ./Dockerfile.php
+  #  ports:
+  #    - 80:80
+  #  volumes:
+  #    - ./www:/var/www/html/
+  #    - ./logs:/var/log/apache2/
+  #  networks:
+  #    - default
+  db:
+    image: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: myDB
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpwd
+      MYSQL_ROOT_PASSWORD: userpwd
+    volumes:
+      - ./dbInit:/docker-entrypoint-initdb.d
+      - persistent:/var/lib/mysql
+    networks:
+      - default
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8082:80
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpwd
+      MYSQL_ROOT_PASSWORD: userpwd
+    networks:
+      - default
+volumes:
+  persistent:
