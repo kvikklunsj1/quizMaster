@@ -3,7 +3,7 @@ from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired
 import mysql.connector
 from flask_login import LoginManager, UserMixin
-
+import traceback
 
 login_manager = LoginManager()
 
@@ -14,19 +14,20 @@ class User(UserMixin):
         self.user_id = user_id
         self.username = username
         self.password = password
+        self.authenticated = False 
 
     def get_id(self):
         return str(self.user_id)
 
     @staticmethod
-    def get(user):
+    def get(username):
         with myDB() as db:
-            userTuple = db.search_user('user', user) #ser om username finnes i user
+            userTuple = db.getUserByID('user', username) #ser om username finnes i user
             if userTuple:
                 user_id = userTuple[0][0]
-                username = userTuple[0][1]
+                username_db = userTuple[0][1]
                 password = userTuple[0][2]
-                return User(user_id, username, password)
+                return User(user_id, username_db, password)
             return None
 
 
@@ -86,12 +87,35 @@ class myDB:
         result = self.cursor.fetchall()
         return result
     
-    def search_user(self, table, usernameForm):
-            sql = f'SELECT * FROM {table} WHERE username = %s'
-            userTuple = self.query(sql, usernameForm)
-            return userTuple
+    def search_user(self, table, usernameForm): #brukes i login
+        sql = f'SELECT * FROM {table} WHERE username = %s'
+        userTuple = self.query(sql, usernameForm)
+        return userTuple
     
-
+    def getUserByID(self, table, user_id): #brukes av login-manager
+        sql = f'SELECT * FROM {table} WHERE user_id = %s'
+        userTuple = self.query(sql, user_id)
+        return userTuple
+    
+    def insert_user(self, username, password_hash):
+        sql = f'INSERT INTO user (username, password) VALUES (%s, %s)'
+        args = (username, password_hash)
+        try:
+            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            return True
+        except Exception:
+            return False
+        
+    def insert_admin(self, adminUsername, adminFornavn, adminEtternavn, adminPassword_hash):
+        sql = f'INSERT INTO admin (username, fornavn, etternavn, password) VALUES (%s, %s, %s, %s)'
+        args = (adminUsername, adminFornavn, adminEtternavn, adminPassword_hash)
+        try:
+            self.query(sql, *args)
+            return True
+        except Exception as e:
+            print(f"Error inserting admin: {e}") #delete
+            traceback.print_exc() #delete
+            return False
 
 class adminLoginForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()], render_kw={"placeholder": "Enter username", "class": "textinput"})

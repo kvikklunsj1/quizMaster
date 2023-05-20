@@ -21,7 +21,3 @@ class adminUser(FlaskForm):
     password = PasswordField('password' , validators=[DataRequired()], render_kw={"placeholder": "Password", "class": "textinput"})
 
 
-  def search_user(self, table, usernameForm):
-        sql = f'SELECT * FROM {table} WHERE username = %s'
-        userTuple = self.query(sql, usernameForm)
-        return userTuple
