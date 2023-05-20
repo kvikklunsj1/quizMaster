@@ -5,27 +5,27 @@ Quizmaster 2023 - Login
 {% endblock %}
 
 {% block main %}
+<div class="login-form-container">
+  <form method="POST" action="{{ url_for('login') }}" class="login-form">
+    {{ form.csrf_token }}
+    {{ form.username }}
+    {{ form.password }}
 
-<form method="POST" action="{{url_for('login')}}" class="login-form">
-    {{login.csrf_token}}
-    <br>
-    {{login.username}}
-    <br>
-    {{login.password}}
-    <br>
     <button type="submit" class = "submitButton">Logg inn</button>
+
     <a href="{{ url_for('register_user') }}">Ikke registret? Klikk her.</a>
 
     {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class=flashes>
-      {% for message in messages %}
-        <p>{{ message }}</p>
-      {% endfor %}
-      </div>
-    {% endif %}
+      {% if messages %}
+        <div class=flashes>
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
     {% endwith %}
 
-</form>
+  </form>
+</div>
 {% endblock %}
 
