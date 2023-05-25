@@ -14,7 +14,7 @@ class User(UserMixin):
         self.user_id = user_id
         self.username = username
         self.password = password
-        self.authenticated = False 
+        self.authenticated = True 
 
     def get_id(self):
         return str(self.user_id)
@@ -22,6 +22,7 @@ class User(UserMixin):
     @staticmethod
     def get(username):
         with myDB() as db:
+            print('Hallo fra uesr getfunksjonen: ', username)
             userTuple = db.getUserByID('user', username) #ser om username finnes i user
             if userTuple:
                 user_id = userTuple[0][0]
@@ -32,25 +33,26 @@ class User(UserMixin):
 
 
     def is_authenticated(self):
-        return self.is_authenticated
+        return self.authenticated
 
     def is_active(self):
         return True
     
     def is_anonymous(self):
         return False
-
-
+    
 class adminUser(User):
     def __init__(self, user_id, username, password, fornavn, etternavn):
         super().__init__(user_id, username, password)
         self.fornavn = fornavn
         self.etternavn = etternavn
 
+
     @staticmethod
-    def get(adminUser):
-        with myDB as db:
-            adminUserTuple = db.search_user('admin', adminUser) #ser om username finnes i user
+    def get(admin_id):
+        with myDB() as db:
+            print('Hallo fra getfunksjonen: ', admin_id)
+            adminUserTuple = db.getAdminByID('admin', admin_id) #ser om username finnes i user
             if adminUserTuple:
                 admin_id = adminUserTuple[0][0]
                 username = adminUserTuple[0][1]
@@ -59,7 +61,6 @@ class adminUser(User):
                 password = adminUserTuple[0][4]
                 return adminUser(admin_id, username, fornavn, etternavn, password)
             return None
-
 
 #Modifisert version av klassen som ble brukt i forelsening: MyDb.py
 class myDB:
@@ -97,6 +98,11 @@ class myDB:
         userTuple = self.query(sql, user_id)
         return userTuple
     
+    def getAdminByID(self, table, admin_id): #brukes av login-manager
+        sql = f'SELECT * FROM {table} WHERE admin_id = %s'
+        userTuple = self.query(sql, admin_id)
+        return userTuple
+    
     def insert_user(self, username, password_hash):
         sql = f'INSERT INTO user (username, password) VALUES (%s, %s)'
         args = (username, password_hash)
@@ -117,17 +123,27 @@ class myDB:
             traceback.print_exc() #delete
             return False
 
+
+    def insert_quiz(self, quiz_name, category, admin_id):
+        sql = f'INSERT INTO quiz (quiz_name, category, admin_id) VALUES (%s, %s, %s)'
+        args = (quiz_name, category, admin_id)
+        try:
+            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            return True
+        except Exception:
+            return False
+        
+
+
+
+
 class adminLoginForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()], render_kw={"placeholder": "Enter username", "class": "textinput"})
     fornavn = StringField('fornavn', validators=[DataRequired()], render_kw={"placeholder": "Fornavn", "class": "textinput"})
     etternavn = StringField('etternavn', validators=[DataRequired()], render_kw={"placeholder": "Etternavn", "class": "textinput"})
     password = PasswordField('password' , validators=[DataRequired()], render_kw={"placeholder": "Password", "class": "textinput"})
-
-
         
 class LoginForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()], render_kw={"placeholder": "Enter username", "class": "textinput"})
     password = PasswordField('password' , validators=[DataRequired()], render_kw={"placeholder": "Password", "class": "textinput"})
 
-
-        

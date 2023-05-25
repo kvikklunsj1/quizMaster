@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 - Admin Menu
+{% endblock %}
+
+{% block main %}
+<div>
+    <h1>Velkommen, Admin {{ current_user.username }} !</h1>
+    <br>
+    <a href="{{ url_for('create_quiz') }}"> Lag ny quiz.</a>
+ 
+</div>
+{% endblock %}
+

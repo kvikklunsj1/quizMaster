@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 - Add question
+{% endblock %}
+
+{% block main %}
+
+<div class="outer-div">
+    <div class="inner-div">
+        <div class="outer-form">
+            <form id="answer_form" action="{{ url_for('create_question', quiz_name=quiz_name) }}" method="POST" class="form">
+                <h2>{{ quiz_name }}</h2>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="form_question" placeholder="Question">
+
+                <select id="answer_type" name="answer_type" onchange="displayForm()">
+                    <option value="essay">Essay</option>
+                    <option value="multiple_choice">Multiple Choice</option>
+                </select>
+                
+                <div id="essay_fields" style="display: none;">
+                    
+                </div>
+            
+                <div id="multiple_choice_fields" style="display: none;">
+                    <input type="text" name="choice_1" placeholder="Choice 1">
+                    <input type="text" name="choice_2" placeholder="Choice 2">
+                    <input type="text" name="choice_3" placeholder="Choice 3">
+                    <input type="text" name="choice_4" placeholder="Choice 4">
+                    <input type="text" name="correct_choice" placeholder="Correct choice">
+                </div>
+             
+                            
+                <button type="submit">Add question</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function displayForm()
+    {
+        var answerType = document.getElementById('answer_type').value;
+
+        if (answerType == 'essay')
+        {
+            document.getElementById('essay_fields').style.display = 'block';
+            document.getElementById('multiple_choice_fields').style.display = 'none';
+        }
+        else if (answerType === 'multiple_choice') 
+        {
+            document.getElementById('essay_fields').style.display = 'none';
+            document.getElementById('multiple_choice_fields').style.display = 'block';        
+        }
+    }
+</script>
+
+<style>
+    .outer-div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 65%;
+    }
+
+    .inner-div {
+        padding: 20px;
+        vertical-align: auto;
+        margin-top: 400px;      
+    }
+
+    .outer-form {
+        width: 90%;
+    }
+
+    .form {
+        display: block;
+        width: 100%;
+        background-color: lightgray;
+        border: 2px solid gray;
+        padding: 40px;
+        border-radius: 5%;
+    }
+
+    .form input {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .form button {
+        align-items: center;
+        margin: 5px;
+        padding: 10px;
+        border-radius: 5%;
+        border: 2px solid gray;
+    }
+
+    .form button:hover {
+        background-color: gray;
+        cursor: pointer;
+    }
+
+    #answer_type {
+        padding: 10px;
+        margin: 5px;
+    }
+
+    .form h3 {
+        margin: 0;
+        padding-bottom: 5px;
+    }
+
+</style>
+
+{% endblock %}

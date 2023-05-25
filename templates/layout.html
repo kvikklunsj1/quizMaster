@@ -16,10 +16,21 @@
     <nav>
         <div class = "navbar">
             <ul class="navbar-ul">
-                <li class="nav-item-left"><a href="{{ url_for('home') }}">Quizmaster 2023</a></li>
-                <li class="nav-item-right"><a href="">Home</a></li>
-                <li class="nav-item-right"><a href="">Login</a></li>
-                <li class="nav-item-right"><a href="">User</a></li>
+                <li class="nav-item-left"><a href="{{ url_for('home') }}">Quizmaster 2023  </a></li>
+                <li class="nav-item-right"><a href="#">Home</a></li>
+                <li class="nav-item-right"><a href="#">Login</a></li>
+
+                {% if current_user.is_authenticated %}
+                <div class="dropdown">                  
+                    <li class="nav-item-right" id="dropdownBtn"><a href="">Profile</a>▼</li>
+                        <div class="dropdown-content">
+                            <li id="dropdown-li"><a href="#">{{ current_user.username }}</a></li>
+                            <li id="dropdown-li"><a href="{{ url_for('logout') }}">Logout</a></li>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item-right"><a href="">Profile</a></li>
+                {% endif %} 
             </ul>
         </div>
     </nav>

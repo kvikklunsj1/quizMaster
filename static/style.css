@@ -54,3 +54,27 @@ body {
     align-items: center;
     text-align: center;
 }
+
+
+.dropdown {
+    position: relative;
+}
+
+#dropdownBtn {
+    font-size: 15px;
+    background-color: rgb(3, 3, 94);
+}
+
+.dropdown-content {
+    display: none;
+    background-color: rgb(4, 4, 117);
+    position: absolute;
+    padding-right: 19px;
+
+}
+
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+

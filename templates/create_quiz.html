@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 - Create quizmaster
+{% endblock %}
+
+{% block main %}
+
+<div class="outer-div">
+    <div class="inner-div">
+        <div class="outer-form">
+            <form action="{{ url_for('create_quiz') }}" method="POST" class="form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="form_quiz_name" placeholder="Name of the quiz">
+                <input type="text" name="form_quiz_category" placeholder="Category">
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .outer-div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 65%;
+    }
+
+    .inner-div {
+        padding: 20px;
+        vertical-align: auto;
+        margin-top: 400px;      
+    }
+
+    .outer-form {
+        width: 90%;
+    }
+
+    .form {
+        display: block;
+        width: 100%;
+        background-color: lightgray;
+        border: 2px solid gray;
+        padding: 40px;
+        border-radius: 5%;
+    }
+
+    .form input {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .form button {
+        align-items: center;
+        padding: 10px;
+        border-radius: 5%;
+        border: 2px solid gray;
+    }
+
+    .form button:hover {
+        background-color: gray;
+        cursor: pointer;
+    }
+
+
+</style>
+
+{% endblock %}
