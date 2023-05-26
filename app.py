@@ -189,47 +189,53 @@ def create_quiz():
 @app.route('/create_quiz/<quiz_name>', methods=['GET', 'POST'])
 @login_required
 def create_question(quiz_name):
+    questionTuple = [] #issus med scope på results
     if request.method == 'POST':
-        questionText = request.form['form_question']
-        answerType = request.form['answer_type']
+        #håndterer nytt spm
+        if 'answer_form' in request.form:
+            questionText = request.form['form_question']
+            answerType = request.form['answer_type']
 
-        #håndterer innsetting av essay-type spørsmål
-        if answerType == 'essay':
+            #håndterer innsetting av essay-type spørsmål
+            if answerType == 'essay':
+                with myDB() as db:
+                    quizID = db.getQuizIDbyName(quiz_name)
+                    if quizID:
+                        db.insert_question(questionText, answerType, quizID)
+                        flash('Question has been added!')
+                    else:
+                        flash('Something went wrong, please try again!')
+
+            #håndterer innsetting av Multiple Choice-type spørsmål    
+            elif answerType == 'multiple_choice':
+                with myDB() as db:
+                    answer1 = request.form['choice_1']
+                    answer2 = request.form['choice_2']
+                    answer3 = request.form['choice_3']
+                    answer4 = request.form['choice_4']
+                    correct = request.form['correct_choice']
+                    
+
+                    questionID = db.getQuestionIDbyText(questionText)
+                    if questionID:
+                        db.insert_multiple_choice_answers(answer1, answer2, answer3, answer4, correct, questionID)
+                        flash('Question has been added!')
+                    else:
+                        flash('Something went wrong, please try again!')
+
+        #håndterer endring eller sletting av spm
+        elif 'edit_question_form' in request.form:
             with myDB() as db:
                 quizID = db.getQuizIDbyName(quiz_name)
-                if quizID:
-                    db.insert_question(questionText, answerType, quizID)
-                    flash('Question has been added!')
-                else:
-                    flash('Something went wrong, please try again!')
+                print('quiz_id fra edit_question form:', quizID)
+                questionTuple = db.displayQuestionsFromQuiz(quizID)
+                print('Henter ut alle spm: ', questionTuple)
+                print(len_questionTuple)
 
-        #håndterer innsetting av Multiple Choice-type spørsmål    
-        elif answerType == 'multiple_choice':
-            with myDB() as db:
-                answer1 = request.form['choice_1']
-                answer2 = request.form['choice_2']
-                answer3 = request.form['choice_3']
-                answer4 = request.form['choice_4']
-                correct = request.form['correct_choice']
-                
-
-                questionID = db.getQuestionIDbyText(questionText)
-                if questionID:
-                    db.insert_multiple_choice_answers(answer1, answer2, answer3, answer4, correct, questionID)
-                    flash('Question has been added!')
-                else:
-                    flash('Something went wrong, please try again!')
-                
-                    
-                
-
+    len_questionTuple = len(questionTuple)
 
             
-
-    
-
-
-    return render_template('create_question.html', quiz_name=quiz_name)
+    return render_template('create_question.html', quiz_name=quiz_name, questionTuple=questionTuple, len_questionTuple=len_questionTuple) 
 
 
 

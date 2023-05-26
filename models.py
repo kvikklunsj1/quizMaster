@@ -22,7 +22,6 @@ class User(UserMixin):
     @staticmethod
     def get(username):
         with myDB() as db:
-            print('Hallo fra uesr getfunksjonen: ', username)
             userTuple = db.getUserByID('user', username) #ser om username finnes i user
             if userTuple:
                 user_id = userTuple[0][0]
@@ -51,7 +50,6 @@ class adminUser(User):
     @staticmethod
     def get(admin_id):
         with myDB() as db:
-            print('Hallo fra getfunksjonen: ', admin_id)
             adminUserTuple = db.getAdminByID('admin', admin_id) #ser om username finnes i user
             if adminUserTuple:
                 admin_id = adminUserTuple[0][0]
@@ -162,7 +160,6 @@ class myDB:
             return None
 
 
-        
     def insert_multiple_choice_answers(self, answer1, answer2, answer3, answer4, correct, questionID):
         sql = f'INSERT INTO answer (answer_1, answer_2, answer_3, answer_4, correct_answer, question_id) VALUES (%s, %s, %s, %s, %s, %s)'
         args = (answer1, answer2, answer3, answer4, correct, questionID)
@@ -171,8 +168,18 @@ class myDB:
             return True
         except Exception:
             return False
-
         
+
+    def displayQuestionsFromQuiz(self, quizID):
+        sql = f'SELECT q.question_id, q.question_text, q.answer_type, a.answer_1, a.answer_2, a.answer_3, a.answer_4, a.correct_answer FROM question q LEFT JOIN answer a ON q.question_id = a.question_id WHERE q.quiz_id=%s'
+        args = (quizID,)
+        try:
+            results = self.query(sql, *args)
+            return results
+        except Exception as e:
+            print("An error occurred:", str(e))
+            return None
+            
 
 
 
