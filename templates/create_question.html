@@ -6,37 +6,96 @@ Quizmaster 2023 - Add question
 
 {% block main %}
 
-<div class="outer-div">
-    <div class="inner-div">
-        <div class="outer-form">
-            <form id="answer_form" action="{{ url_for('create_question', quiz_name=quiz_name) }}" method="POST" class="form">
-                <h2>{{ quiz_name }}</h2>
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="text" name="form_question" placeholder="Question">
+<div class="outer-wrapper">
+    <div class="outer-div">
+        <div class="inner-div">
+            <div class="outer-form">
+                <form id="answer_form" action="{{ url_for('create_question', quiz_name=quiz_name) }}" method="POST" class="form">
+                    <h2>{{ quiz_name }}</h2>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="text" name="form_question" placeholder="Question">
 
-                <select id="answer_type" name="answer_type" onchange="displayForm()">
-                    <option value="essay">Essay</option>
-                    <option value="multiple_choice">Multiple Choice</option>
-                </select>
-                
-                <div id="essay_fields" style="display: none;">
+                    <select id="answer_type" name="answer_type" onchange="displayForm()">
+                        <option value="essay">Essay</option>
+                        <option value="multiple_choice">Multiple Choice</option>
+                    </select>
                     
-                </div>
-            
-                <div id="multiple_choice_fields" style="display: none;">
-                    <input type="text" name="choice_1" placeholder="Choice 1">
-                    <input type="text" name="choice_2" placeholder="Choice 2">
-                    <input type="text" name="choice_3" placeholder="Choice 3">
-                    <input type="text" name="choice_4" placeholder="Choice 4">
-                    <input type="text" name="correct_choice" placeholder="Correct choice">
-                </div>
-             
-                            
-                <button type="submit">Add question</button>
-            </form>
+                    <div id="essay_fields" style="display: none;">
+                        
+                    </div>
+                
+                    <div id="multiple_choice_fields" style="display: none;">
+                        <input type="text" name="choice_1" placeholder="Choice 1">
+                        <input type="text" name="choice_2" placeholder="Choice 2">
+                        <input type="text" name="choice_3" placeholder="Choice 3">
+                        <input type="text" name="choice_4" placeholder="Choice 4">
+                        <input type="text" name="correct_choice" placeholder="Correct choice">
+                    </div>
+                
+                                
+                    <button type="submit">Add question</button>
+
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div class=flashes>
+                        {% for message in messages %}
+                        <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endwith %}
+
+                
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="outer-div">
+        <div class="inner-div">
+            <div class="outer-form">
+                <form id="answer_form" action="{{ url_for('create_question', quiz_name=quiz_name) }}" method="POST" class="form">
+                    <h2>{{ quiz_name }}</h2>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="text" name="form_question" placeholder="Question">
+
+                    <select id="answer_type" name="answer_type" onchange="displayForm()">
+                        <option value="essay">Essay</option>
+                        <option value="multiple_choice">Multiple Choice</option>
+                    </select>
+                    
+                    <div id="essay_fields" style="display: none;">
+                        
+                    </div>
+                
+                    <div id="multiple_choice_fields" style="display: none;">
+                        <input type="text" name="choice_1" placeholder="Choice 1">
+                        <input type="text" name="choice_2" placeholder="Choice 2">
+                        <input type="text" name="choice_3" placeholder="Choice 3">
+                        <input type="text" name="choice_4" placeholder="Choice 4">
+                        <input type="text" name="correct_choice" placeholder="Correct choice">
+                    </div>
+                
+                                
+                    <button type="submit">Add question</button>
+
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div class=flashes>
+                        {% for message in messages %}
+                        <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endwith %}
+
+                
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
 
 <script>
     function displayForm()
@@ -57,17 +116,23 @@ Quizmaster 2023 - Add question
 </script>
 
 <style>
-    .outer-div {
+    .outer-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
-        opacity: 65%;
+    }
+
+
+
+    .outer-div {
+        margin: 12px;
+       
     }
 
     .inner-div {
         padding: 20px;
         vertical-align: auto;
-        margin-top: 400px;      
+        margin-top: 400px;     
     }
 
     .outer-form {

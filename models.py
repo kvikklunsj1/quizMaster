@@ -133,6 +133,46 @@ class myDB:
         except Exception:
             return False
         
+    def insert_question(self, questionText, answerType, admin_id):
+        sql = f'INSERT INTO question (question_text, answer_type, quiz_id) VALUES (%s, %s, %s)'
+        args = (questionText, answerType, admin_id)
+        try:
+            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            return True
+        except Exception:
+            return False
+        
+    
+    def getQuizIDbyName(self, quiz_name):
+        sql = f'SELECT quiz_id FROM quiz WHERE quiz_name=%s'
+        args = (quiz_name,)
+        try:
+            result = self.query(sql, *args)
+            return result[0][0] #returnerer int istedenfor tuple
+        except Exception:
+            return None
+    
+    def getQuestionIDbyText(self, questionText):
+        sql = f'SELECT question_id FROM question WHERE question_text=%s'
+        args = (questionText,)
+        try:
+            result = self.query(sql, *args)
+            return result[0][0] #returnerer int istedenfor tuple
+        except Exception:
+            return None
+
+
+        
+    def insert_multiple_choice_answers(self, answer1, answer2, answer3, answer4, correct, questionID):
+        sql = f'INSERT INTO answer (answer_1, answer_2, answer_3, answer_4, correct_answer, question_id) VALUES (%s, %s, %s, %s, %s, %s)'
+        args = (answer1, answer2, answer3, answer4, correct, questionID)
+        try:
+            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            return True
+        except Exception:
+            return False
+
+        
 
 
 
