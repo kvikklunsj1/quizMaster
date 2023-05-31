@@ -156,7 +156,8 @@ class myDB:
         try:
             result = self.query(sql, *args)
             return result[0][0] #returnerer int istedenfor tuple
-        except Exception:
+        except Exception as e:
+            print('Error:', e)
             return None
 
 
@@ -180,7 +181,40 @@ class myDB:
             print("An error occurred:", str(e))
             return None
             
+    def update_multiple_choice_answers(self, answer1, answer2, answer3, answer4, correct, questionID):
+        sql = f'UPDATE answer SET answer_1 = %s, answer_2 = %s, answer_3 = %s, answer_4 = %s, correct_answer = %s WHERE question_id = %s'
+        args = (answer1, answer2, answer3, answer4, correct, questionID)
+        try:
+            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            return True
+        except Exception:
+            return False
+        
 
+    def update_question(self, questionText, answerType, question_id):
+        sql = f'UPDATE question SET question_text=%s, answer_type=%s WHERE question_id=%s'
+        args = (questionText, answerType, question_id)
+        try:
+            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            return True
+        except Exception:
+            return False
+        
+    def delete_question(self, question_id):
+        sql = f'DELETE FROM question WHERE question_id=%s'
+        args = (question_id,)
+        try:
+            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            return True
+        except Exception:
+            return False
+    
+    def get_all_quizzez(self):
+        sql = f'SELECT quiz_id, quiz_name, category FROM quiz'
+        try:
+            return self.query(sql)
+        except Exception:
+            return False
 
 
 

@@ -6,7 +6,35 @@ Quizmaster 2023 - Menu
 
 {% block main %}
 
-<h1>Velkommen</h1>
+<div>
+    <h1>Velkommen, {{ current_user.username }} !</h1>
+    <br>
+    <div class="outer-div">
+        <div class="inner-div">
+            <h3>Quizes:</h3>
+            <table>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Link</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for quiz in quiz_tuple %}
+                  <tr>
+                    <td>{{ quiz[1] }}</td>
+                    <td>{{ quiz[2] }}</td>
+                    <td><a href="{{ url_for('run_quiz', quiz_name=quiz[1]) }}">{{ quiz[1] }}</a></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+         </div>
+    </div>
+ 
+</div>
  
 
 {% endblock %}

@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 -
+{% endblock %}
+
+{% block main %}
+
+<div>
+    <h1>Velkommen!</h1>
+    <br>
+    <div class="outer-div">
+        <div class="inner-div">
+
+            <form method="POST" action="{{ url_for('run_quiz', quiz_name=quiz_name) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% for index in range(0, questions|length) %}
+                <div class="question-multiple-wrapper">
+                    <div class="question-text-wrapper">
+                        <h4>Question {{ index+1 }}: {{ questions[index][1] }}</h4>
+                    </div>
+                    {% if questions[index][2] == 'multiple_choice' %}
+                    <div class="multiple_choice-wrapper">
+                        <label for="ans1{{ index }}"> {{ questions[index][3] }} </label>
+                        <input type="checkbox" name="ans1{{ index }}">
+
+                        <label for="ans2{{ index }}"> {{ questions[index][4] }} </label>
+                        <input type="checkbox" name="ans2{{ index }}">
+
+                        <label for="ans3{{ index }}"> {{ questions[index][5] }} </label>
+                        <input type="checkbox" name="ans3{{ index }}">
+
+                        <label for="ans4{{ index }}"> {{ questions[index][6] }} </label>
+                        <input type="checkbox" name="ans4{{ index }}">
+                    </div>
+                    {% else %}
+                    <div class="essay-wrapper">
+                        <input type="text" name="question{{ index }}_essay_ans" value="">
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <br>
+                <button type="submit">Submit</button>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class=flashes>
+                    {% for message in messages %}
+                    <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </form>
+            
+
+          
+         </div>
+    </div>
+ 
+</div>
+ 
+<style>
+    .outer-div {
+        display: flex;
+        background-color: antiquewhite;
+        opacity: 50%;
+        height: 80vh;
+        width: 80vw;
+        margin-top: 50%;
+        margin-bottom: 20%;
+        justify-content: center;
+    }
+
+    .inner-div {
+        overflow-y: scroll;
+    }
+
+</style>
+
+{% endblock %}
+

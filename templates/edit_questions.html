@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 - Edit questions
+{% endblock %}
+
+
+{% block main %}
+<div class="form-wrapper">
+    <div class="inner-form-wrapper">
+        <form method="POST" action="{{ url_for('edit_questions', quiz_name=quiz_name) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% for index in range(0, questions|length) %}
+            <div class="question-multiple-wrapper">
+                <div class="question-text-wrapper">
+                    <label for="question{{ index+1 }}_text">Question {{ index+1 }}:</label>
+                    <input type="text" name="question{{ index+1 }}_text" value="{{ questions[index][1] }}">
+                    <br>
+                    <label for="delete_question{{ index+1 }}">Delete question:</label>
+                    <br>
+                    <input type="checkbox" name="delete_question{{ index+1 }}">
+                </div>
+                {% if questions[index][2] == 'multiple_choice' %}
+                <div class="multiple_choice-wrapper">
+                    <label for="question{{ index+1 }}_answer1">Answer 1:</label>
+                    <input type="text" name="question{{ index+1 }}_answer1" value="{{ questions[index][3] }}">
+                    
+                    <label for="question{{ index+1 }}_answer2">Answer 2:</label>
+                    <input type="text" name="question{{ index+1 }}_answer2" value="{{ questions[index][4] }}">
+        
+                    <label for="question{{ index+1 }}_answer3">Answer 3:</label>
+                    <input type="text" name="question{{ index+1 }}_answer3" value="{{ questions[index][5] }}">
+        
+                    <label for="question{{ index+1 }}_answer4">Answer 4:</label>
+                    <input type="text" name="question{{ index+1 }}_answer4" value="{{ questions[index][6] }}">
+        
+                    <label for="question{{ index+1 }}_correct">Correct answer:</label>
+                    <input type="text" name="question{{ index+1 }}_correct" value="{{ questions[index][7] }}">
+                </div>
+            {% endif %}
+            </div>
+            {% endfor %}
+        <button type="submit">Update</button>
+
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class=flashes>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+    </form>
+  </div>
+</div>
+
+<style>
+    .form-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        margin-top: 20%;
+    }
+
+    .inner-form-wrapper {
+        height: 250%;
+        width: 100%;
+        overflow-y: scroll;
+    }
+
+    .form-wrapper input {
+        font-size: 15px;
+    }
+
+
+    .question-text-wrapper {
+        margin-bottom: 10px;
+        
+    }
+    .question-text-wrapper input {
+        margin-bottom: 10px;
+        width: 80%;
+    }
+
+
+    .multiple_choice-wrapper {
+        margin-left: 20px;
+        padding: 10px;
+    }
+
+
+    .question-multiple-wrapper {
+        border: 2px solid black;
+        padding: 5px;
+        border-radius: 5%;
+    }
+
+    .question-multiple-wrapper:hover {
+        background-color: gray;
+    }
+
+
+</style>
+
+
+
+
+
+
+{% endblock %}
+

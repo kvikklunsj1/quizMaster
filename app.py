@@ -14,6 +14,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+
 @login_manager.user_loader
 def load_user(user_id):
     user = User.get(user_id)
@@ -121,7 +122,7 @@ def register_user():
     register_user = LoginForm() #samme form som til login
     if register_user.validate_on_submit():
         username = register_user.username.data
-        password_hash = generate_password_hash(register_user.password.data, method='scrypt')
+        password_hash = generate_password_hash(register_user.password.data, method='sha256')
 
         with myDB() as db:
             is_registred = db.insert_user(username, password_hash) #returnerer bool
@@ -140,7 +141,7 @@ def register_admin():
         adminUsername = register_admin.username.data
         adminFornavn = register_admin.fornavn.data
         adminEtternavn = register_admin.etternavn.data
-        adminPassword_hash = generate_password_hash(register_admin.password.data, method='scrypt')
+        adminPassword_hash = generate_password_hash(register_admin.password.data, method='sha256')
 
         with myDB() as db:
             is_registred = db.insert_admin(adminUsername, adminFornavn, adminEtternavn, adminPassword_hash) #returnerer bool
@@ -152,19 +153,14 @@ def register_admin():
     return render_template('register_admin.html', register_admin=register_admin, csrf_token=register_admin.csrf_token)
 
 
-@app.route('/user_menu', methods=['GET', 'POST'])
-@login_required
-def user_menu():
-
-
-    return render_template('user_menu.html')
-
-
 @app.route('/admin_menu', methods=['GET', 'POST'])
 @login_required
 def admin_menu():
-
-    return render_template('admin_menu.html')
+    quiz_tuple = []
+    with myDB() as db:
+         quiz_tuple= db.get_all_quizzez()
+         
+    return render_template('admin_menu.html',quiz_tuple=quiz_tuple)
 
 
 
@@ -189,57 +185,183 @@ def create_quiz():
 @app.route('/create_quiz/<quiz_name>', methods=['GET', 'POST'])
 @login_required
 def create_question(quiz_name):
-    questionTuple = [] #issus med scope på results
+    questionText = 0 #nødløsning scope-issue
+
     if request.method == 'POST':
-        #håndterer nytt spm
-        if 'answer_form' in request.form:
-            questionText = request.form['form_question']
-            answerType = request.form['answer_type']
+        #håndterer nytt spm   
+        questionText = request.form['form_question']
+        answerType = request.form['answer_type']
 
-            #håndterer innsetting av essay-type spørsmål
-            if answerType == 'essay':
-                with myDB() as db:
-                    quizID = db.getQuizIDbyName(quiz_name)
-                    if quizID:
-                        db.insert_question(questionText, answerType, quizID)
-                        flash('Question has been added!')
-                    else:
-                        flash('Something went wrong, please try again!')
-
-            #håndterer innsetting av Multiple Choice-type spørsmål    
-            elif answerType == 'multiple_choice':
-                with myDB() as db:
-                    answer1 = request.form['choice_1']
-                    answer2 = request.form['choice_2']
-                    answer3 = request.form['choice_3']
-                    answer4 = request.form['choice_4']
-                    correct = request.form['correct_choice']
-                    
-
-                    questionID = db.getQuestionIDbyText(questionText)
-                    if questionID:
-                        db.insert_multiple_choice_answers(answer1, answer2, answer3, answer4, correct, questionID)
-                        flash('Question has been added!')
-                    else:
-                        flash('Something went wrong, please try again!')
-
-        #håndterer endring eller sletting av spm
-        elif 'edit_question_form' in request.form:
+        #håndterer innsetting av essay-type spørsmål
+        if answerType == 'essay':
             with myDB() as db:
                 quizID = db.getQuizIDbyName(quiz_name)
-                print('quiz_id fra edit_question form:', quizID)
-                questionTuple = db.displayQuestionsFromQuiz(quizID)
-                print('Henter ut alle spm: ', questionTuple)
-                print(len_questionTuple)
+                if quizID:
+                    db.insert_question(questionText, answerType, quizID)
+                    flash('Question has been added!')
+                else:
+                    flash('Something went wrong, please try again!')
 
-    len_questionTuple = len(questionTuple)
+        #håndterer innsetting av Multiple Choice-type spørsmål    
+        elif answerType == 'multiple_choice':
+            with myDB() as db:
+                quizID = db.getQuizIDbyName(quiz_name)
+                if quizID:
+                    db.insert_question(questionText, answerType, quizID)
+                else:
+                    flash('Something went wrong, please try again!')
+
+                answer1 = request.form['choice_1']
+                answer2 = request.form['choice_2']
+                answer3 = request.form['choice_3']
+                answer4 = request.form['choice_4']
+                correct = request.form['correct_choice']
+                
+
+                questionID = db.getQuestionIDbyText(questionText)
+                if questionID:
+                    db.insert_multiple_choice_answers(answer1, answer2, answer3, answer4, correct, questionID)
+                    flash('Question has been added!')
+                else:
+                    flash('Something went wrong, please try again!')
 
             
-    return render_template('create_question.html', quiz_name=quiz_name, questionTuple=questionTuple, len_questionTuple=len_questionTuple) 
+            
+    return render_template('create_question.html', quiz_name=quiz_name) 
 
 
 
 
+@app.route('/create_quiz/<quiz_name>/edit_questions', methods=['GET', 'POST'])
+@login_required
+def edit_questions(quiz_name): 
+    #henter alle spørsmål tilknyttet valgt quiz
+    with myDB() as db:
+        quiz_id = db.getQuizIDbyName(quiz_name) # ikke optimal løsning, men siden quiz_name er uniqe så funker det
+
+        if quiz_id:
+            questions = db.displayQuestionsFromQuiz(quiz_id)
+        else:
+            questions = []
+            flash('Something went wrong, please try again!')
+
+   
+
+    if request.method == 'POST':
+       len_questions = len(questions)
+       quizID = None
+       with myDB() as db:
+           quizID = db.getQuizIDbyName(quiz_name)
+
+       for index in range(len_questions):
+    
+            question_id = questions[index][0] #uendret verdi
+            question_text = request.form[f'question{index+1}_text'] # kan være endret
+            answer_type = questions[index][2] # undret verdi
+            len_questions = len(questions)
+            delete_question = request.form.get(f'delete_question{index+1}', False)
+            print(delete_question)
+            #håndterer checkbox returnerer on hvis den er checked           
+            if delete_question == 'on':
+                with myDB() as db:
+                    db.delete_question(question_id)
+
+
+            #håndterer innsetting av essay-type spørsmål
+            elif answer_type == 'essay':
+                with myDB() as db:
+                    db.update_question(question_text, answer_type, question_id)
+                   
+
+            #håndterer innsetting av Multiple Choice-type spørsmål    
+            elif answer_type == 'multiple_choice':
+                with myDB() as db:
+                    db.update_question(question_text, answer_type, quizID)
+
+                    answer1 = request.form[f'question{index+1}_answer1']
+                    answer2 = request.form[f'question{index+1}_answer2']
+                    answer3 = request.form[f'question{index+1}_answer3']
+                    answer4 = request.form[f'question{index+1}_answer4']
+                    correct = request.form[f'question{index+1}_correct']
+
+                    if question_id:
+                        db.update_multiple_choice_answers(answer1, answer2, answer3, answer4, correct, question_id)
+                        flash('Question has been updated!')
+                    else:
+                        flash('Something went wrong, please try again!')
+
+
+   
+
+    
+    return render_template('edit_questions.html', quiz_name=quiz_name, questions=questions) 
+
+
+@app.route('/user_menu', methods=['GET', 'POST'])
+@login_required
+def user_menu():
+    quiz_tuple = []
+    with myDB() as db:
+         quiz_tuple= db.get_all_quizzez()
+    
+
+
+
+    return render_template('user_menu.html', quiz_tuple=quiz_tuple)
+
+
+@app.route('/run_quiz/<quiz_name>', methods=['GET', 'POST'])
+@login_required
+def run_quiz(quiz_name):
+
+    #henter alle spørsmål tilknyttet valgt quiz
+    quiz_id = None #scope quickfix
+    user_id = current_user.user_id
+
+    with myDB() as db:
+        quiz_id = db.getQuizIDbyName(quiz_name) # ikke optimal løsning, men siden quiz_name er uniqe så funker det
+
+        if quiz_id:
+            questions = db.displayQuestionsFromQuiz(quiz_id)
+        else:
+            questions = []
+            flash('Something went wrong, please try again!')
+
+    if request.method == 'POST':
+        len_questions = len(questions)
+
+        for index in range(len_questions):
+            question_id = questions[index][0]
+            answer_type = questions[index][2]
+            print('runquizanstype', answer_type) #delete
+
+
+            if answer_type ==  'multiple_choice':
+                user_answer1 = request.form.get(f'ans1{index}', False)
+                user_answer2 = request.form.get(f'ans2{index}', False)
+                user_answer3 = request.form.get(f'ans3{index}', False)
+                user_answer4 = request.form.get(f'ans4{index}', False)
+
+                
+                print('ans1', user_answer1)#delete
+                print('ans2', user_answer2)#delete
+                print('ans3', user_answer3)#delete
+                print('ans4', user_answer4)#delete
+
+                
+                #with myDB() as db:
+                #    db.multi_answer(question_id, user_id, user_answer1, user_answer2, user_answer3, user_answer4)
+
+            elif answer_type == 'essay':
+                user_answer = request.form[f'question{index}_essay_ans']
+                print(user_answer)
+                #with myDB as db:
+                #    db.essay_answer(question_id, user_id, user_answer)
+
+
+
+
+    return render_template('run_quiz.html', quiz_name=quiz_name, questions=questions)
 
 
 

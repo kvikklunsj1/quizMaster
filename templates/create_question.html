@@ -5,83 +5,46 @@ Quizmaster 2023 - Add question
 {% endblock %}
 
 {% block main %}
-<div class="outer-wrapper">
-    <div class="outer-div">
-        <div class="inner-div">
-            <div class="outer-form">
-                <form id="answer_form" action="{{ url_for('create_question', quiz_name=quiz_name) }}" method="POST" class="form">
-                    <h2>{{ quiz_name }}</h2>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="text" name="form_question" placeholder="Question">
 
-                    <select id="answer_type" name="answer_type" onchange="displayForm()">
-                        <option value="essay">Essay</option>
-                        <option value="multiple_choice">Multiple Choice</option>
-                    </select>
-                    
-                    <div id="essay_fields" style="display: none;"></div>
+<div class="outer-div">
+    <div class="inner-div">
+        <div class="outer-form">
+            <form id="answer_form" action="{{ url_for('create_question', quiz_name=quiz_name) }}" method="POST" class="form">
+                <h2>{{ quiz_name }}</h2>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="form_question" placeholder="Question">
+
+                <select id="answer_type" name="answer_type" onchange="displayForm()">
+                    <option value="essay">Essay</option>
+                    <option value="multiple_choice">Multiple Choice</option>
+                </select>
                 
-                    <div id="multiple_choice_fields" style="display: none;">
-                        <input type="text" name="choice_1" placeholder="Choice 1">
-                        <input type="text" name="choice_2" placeholder="Choice 2">
-                        <input type="text" name="choice_3" placeholder="Choice 3">
-                        <input type="text" name="choice_4" placeholder="Choice 4">
-                        <input type="text" name="correct_choice" placeholder="Correct choice">
-                    </div>
-                
-                    <button type="submit">Add question</button>
-
-                    {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                    <div class=flashes>
-                        {% for message in messages %}
-                        <p>{{ message }}</p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    {% endwith %}
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="outer-div">
-        <div class="inner-div">
-            <div class="outer-form">
-                <div class="outer-scrollbox">
-                    <div class="inner-scrollbox">
-                        <form id="edit_question_form" action="{{ url_for('create_question', quiz_name=quiz_name) }}" method="POST" class="form">
-                            <h2>Oversikt</h2>
-                            {% if questionTuple %}
-                                {% for i in range(0, len_questionTuple) %}
-                                    {% if questionTuple[i][2] == 'multiple_choice' %}
-                                        <h3>Answer Options:</h3>
-                                        <input type="hidden" name="question_id" value="{{ questionTuple[i][0] }}">
-                                        <input type="text" name="answer_1" value="{{ questionTuple[i][3] }}"><br>
-                                        <input type="text" name="answer_2" value="{{ questionTuple[i][4] }}"><br>
-                                        <input type="text" name="answer_3" value="{{ questionTuple[i][5] }}"><br>
-                                        <input type="text" name="answer_4" value="{{ questionTuple[i][6] }}"><br>
-                                        <input type="text" name="correct_answer" value="{{ questionTuple[i][7] }}"><br>
-                                    {% elif questionTuple[i][2] == 'essay' %}
-                                        <h3>Answer:</h3>
-                                        <input type="hidden" name="question_id" value="{{ questionTuple[i][0]}}">
-                                    {% endif %}
-                                {% endfor %}
-                                <input type="hidden" name="edit_question_form" value="1">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit">Refresh</button>
-                            {% else %}
-                                <p>No questions found.</p>
-                            {% endif %}
-                        </form>
-                    </div>
+                <div id="essay_fields" style="display: none;"></div>
+            
+                <div id="multiple_choice_fields" style="display: none;">
+                    <input type="text" name="choice_1" placeholder="Choice 1">
+                    <input type="text" name="choice_2" placeholder="Choice 2">
+                    <input type="text" name="choice_3" placeholder="Choice 3">
+                    <input type="text" name="choice_4" placeholder="Choice 4">
+                    <input type="text" name="correct_choice" placeholder="Correct choice">
                 </div>
-            </div>
+            
+                <button type="submit">Add question</button>
+
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class=flashes>
+                    {% for message in messages %}
+                    <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+                <a href="{{ url_for('edit_questions', quiz_name=quiz_name) }}">Edit questions? Click here.</a>
+            </form>
         </div>
     </div>
 </div>
-
-
 
 <script>
     function displayForm()
@@ -100,45 +63,14 @@ Quizmaster 2023 - Add question
         }
     }
 
-    
-
 </script>
 
 <style>
-    /* vv Scrollbox vv */
-    .outer-scrollbox {
-        height: 400px;
-        width: 600px;
-    }
-
-    .inner-scrollbox {
-        height: 100%;
-        width: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        margin: 10px auto;
-        padding: 10px 100px;
-        border: 1px solid black;
-        border-radius: 5px;
-        box-sizing: border-box;
-
-    }
-    
-
-
-    /* ^^ Scrollbox ^^ */
-
-
-
-    .outer-wrapper {
+ 
+    .outer-div {
         display: flex;
         justify-content: center;
         align-items: center;
-    }
-
-    .outer-div {
-        margin: 12px;
-       
     }
 
     .inner-div {
