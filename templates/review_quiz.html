@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 - Home
+{% endblock %}
+
+{% block main %}
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Written Answer</th>
+            <th>Answer type</th>
+            <th>Written answer</th>
+            <th>Answer 1</th>
+            <th>Answer 2</th>
+            <th>Answer 3</th>
+            <th>Answer 4</th>
+            <th>Comment</th>
+            <th>Update status</th>
+            <th>Status</th>
+       
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in results %}
+        <tr>
+            <td>{{ row[4] }}</td>
+            <td>{{ row[5] }}</td>
+            <td>{{ row[6] }}</td>
+            <td>{{ row[7] }}</td>
+            <td>{{ row[8] }}</td>
+            <td>{{ row[9] }}</td>
+            <td>{{ row[10] }}</td>
+            <td>
+                <form action="{{ url_for('review_quiz', completed_quiz_id=row[0]) }}" method="POST" id="form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="text" name="comment" value="{{ row[12] }}" id="comment">
+                    <input type="hidden" name="status" value="Approved">
+                    <input type="hidden" name="question_id" value="{{ row[3] }}"> 
+            </td>
+            <td>
+                    <button type="submit" id="submitbtn">Approve</button>
+                </form>
+            </td>
+           
+            <td>{{ row[11] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<style>
+    table {
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+
+    th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid black;
+        }
+
+    
+    th {
+        background-color: gray;
+    }
+
+</style>
+{#
+    <td>{{ row[0] }}</td> completed_quiz_id
+    <td>{{ row[1] }}</td> user_id
+    <td>{{ row[2] }}</td> quiz_id
+    <td>{{ row[3] }}</td> question_id
+    <td>{{ row[4] }}</td> question_text
+    <td>{{ row[5] }}</td> answer_type
+    <td>{{ row[6] }}</td> written_answer
+    <td>{{ row[7] }}</td> choice_1
+    <td>{{ row[8] }}</td> choice_2
+    <td>{{ row[9] }}</td> choice_3
+    <td>{{ row[10] }}</td> choice_4
+    #}
+
+{% endblock %}
+

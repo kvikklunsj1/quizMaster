@@ -317,6 +317,7 @@ def run_quiz(quiz_name):
     #henter alle spørsmål tilknyttet valgt quiz
     quiz_id = None #scope quickfix
     user_id = current_user.user_id
+    print('userID i runquiz = ', user_id)
 
     with myDB() as db:
         quiz_id = db.getQuizIDbyName(quiz_name) # ikke optimal løsning, men siden quiz_name er uniqe så funker det
@@ -333,37 +334,104 @@ def run_quiz(quiz_name):
         for index in range(len_questions):
             question_id = questions[index][0]
             answer_type = questions[index][2]
-            print('runquizanstype', answer_type) #delete
 
 
             if answer_type ==  'multiple_choice':
                 user_answer1 = request.form.get(f'ans1{index}', False)
+                user_answer1 = True if user_answer1 == 'on' else False #boolifiserer user_answer
+
                 user_answer2 = request.form.get(f'ans2{index}', False)
+                user_answer2 = True if user_answer2 == 'on' else False
+
                 user_answer3 = request.form.get(f'ans3{index}', False)
+                user_answer3 = True if user_answer3 == 'on' else False
+
                 user_answer4 = request.form.get(f'ans4{index}', False)
+                user_answer4 = True if user_answer4 == 'on' else False
+                with myDB() as db:
+                   db.insert_multi_choice(user_id, question_id, user_answer1, user_answer2, user_answer3, user_answer4)
 
-                
-                print('ans1', user_answer1)#delete
-                print('ans2', user_answer2)#delete
-                print('ans3', user_answer3)#delete
-                print('ans4', user_answer4)#delete
 
-                
-                #with myDB() as db:
-                #    db.multi_answer(question_id, user_id, user_answer1, user_answer2, user_answer3, user_answer4)
 
             elif answer_type == 'essay':
                 user_answer = request.form[f'question{index}_essay_ans']
-                print(user_answer)
-                #with myDB as db:
-                #    db.essay_answer(question_id, user_id, user_answer)
+                with myDB() as db:
+                    db.insert_essay_ans(question_id, user_id, user_answer)
 
+         #oppdaterer completed_quizzes-table
+        with myDB() as db:
+            db.complete_quiz(quiz_id, user_id)
 
 
 
     return render_template('run_quiz.html', quiz_name=quiz_name, questions=questions)
 
 
+@app.route('/administrate_quiz', methods=['GET', 'POST'])
+@login_required
+def administrate_quiz():
+
+    with myDB() as db:
+        completed_quizzes = db.get_completed_quizes()
+        print(completed_quizzes)
+
+    
+
+    return render_template('administrate_quizes.html', completed_quizzes=completed_quizzes)
+
+
+
+
+@app.route('/administrate_quiz/<completed_quiz_id>', methods=['GET', 'POST'])
+@login_required
+def review_quiz(completed_quiz_id):
+
+    print('stemmer id montro?: ', completed_quiz_id)
+    with myDB() as db:
+        results = db.get_completed_user_quiz(completed_quiz_id)
+
+
+    if request.method == 'POST':
+        comment = request.form['comment']
+        status = request.form['status']
+        question_id = request.form['question_id']
+        with myDB() as db:
+            db.update_question_status(status, comment, completed_quiz_id, question_id)
+
+
+    return render_template('review_quiz.html', results=results)
+
+
+
+
+
+
+@app.route('/quiz_results', methods=['GET', 'POST'])
+@login_required
+def view_quiz_results():
+    user_id = current_user.user_id 
+    print(user_id)
+    
+    with myDB() as db:
+        completed_quizzes = db.get_completed_quizes_by_ID(user_id)
+     
+    
+    return render_template('view_quiz_results.html', completed_quizzes=completed_quizzes)
+
+
+
+@app.route('/quiz_results/<completed_quiz_id>', methods=['GET', 'POST'])
+@login_required
+def review_one_quiz_results(completed_quiz_id):
+    user_id = current_user.user_id 
+    
+    with myDB() as db:
+        completed_quizzes = db.get_completed_user_quiz_by_user_id(completed_quiz_id, user_id)
+    
+     
+        print('testtest', completed_quizzes)
+    
+    return render_template('review_one_quiz_results.html', completed_quizzes=completed_quizzes)
 
 
 

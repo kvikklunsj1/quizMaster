@@ -5,9 +5,10 @@ Quizmaster 2023 - Admin Menu
 {% endblock %}
 
 {% block main %}
-<div>
+
+<div class="content">
     <h1>Velkommen, Admin {{ current_user.username }} !</h1>
-    <br>
+    <p><a href="{{ url_for('create_quiz') }}">Create a new quiz!</a></p>
     <div class="outer-div">
         <div class="inner-div">
             <h3>Quizez!</h3>
@@ -30,8 +31,37 @@ Quizmaster 2023 - Admin Menu
                 </tbody>
               </table>
          </div>
+    </div> 
+
+  <div class="outer-div2">
+    <div class="inner-div2">
+      <h3>Administer quizez!</h3>
+      <a href="{{ url_for('administrate_quiz') }}">Continue</a>
     </div>
- 
+  </div>
+
+
 </div>
+<style>
+
+  .content {
+    display: block;
+    
+  }
+  .outer-div {
+    background-color: gray;
+    opacity: 75%;
+    border-radius: 5%;
+  }
+  .outer-div2 {
+    background-color: gray;
+    opacity: 75%;
+  }
+
+
+  
+  
+  
+  </style>
 {% endblock %}
 

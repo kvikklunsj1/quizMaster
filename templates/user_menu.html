@@ -6,7 +6,8 @@ Quizmaster 2023 - Menu
 
 {% block main %}
 
-<div>
+<div class="main-div">
+  <br><br>
     <h1>Velkommen, {{ current_user.username }} !</h1>
     <br>
     <div class="outer-div">
@@ -33,9 +34,25 @@ Quizmaster 2023 - Menu
               </table>
          </div>
     </div>
- 
+
+    <div class="outer-div2">
+      <div class="inner-div2">
+        <h3>Gjennomførte quizez!</h3>
+        <a href="{{ url_for('view_quiz_results') }}">Continue</a>
+      </div>
+    </div>
+
 </div>
  
 
+<style>
+  
+  .outer-div {
+    border: 1px solid black;
+    background-color: antiquewhite;
+  }
+
+
+</style>
 {% endblock %}
 

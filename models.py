@@ -185,7 +185,7 @@ class myDB:
         sql = f'UPDATE answer SET answer_1 = %s, answer_2 = %s, answer_3 = %s, answer_4 = %s, correct_answer = %s WHERE question_id = %s'
         args = (answer1, answer2, answer3, answer4, correct, questionID)
         try:
-            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            self.query(sql, *args) 
             return True
         except Exception:
             return False
@@ -195,7 +195,7 @@ class myDB:
         sql = f'UPDATE question SET question_text=%s, answer_type=%s WHERE question_id=%s'
         args = (questionText, answerType, question_id)
         try:
-            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            self.query(sql, *args) 
             return True
         except Exception:
             return False
@@ -204,7 +204,7 @@ class myDB:
         sql = f'DELETE FROM question WHERE question_id=%s'
         args = (question_id,)
         try:
-            self.query(sql, *args) #blir behandlet som en tuple, så den kan håndtere flere parametere
+            self.query(sql, *args) 
             return True
         except Exception:
             return False
@@ -215,6 +215,94 @@ class myDB:
             return self.query(sql)
         except Exception:
             return False
+    
+
+    def insert_multi_choice(self, user_id, question_id, user_answer1, user_answer2, user_answer3, user_answer4):
+        sql = f'INSERT INTO user_selected_choice (user_id, question_id, choice_1, choice_2, choice_3, choice_4) VALUES (%s, %s, %s, %s, %s, %s)'
+        args = (user_id, question_id, user_answer1, user_answer2, user_answer3, user_answer4)
+        try:
+            self.query(sql, *args) 
+            return True
+        except Exception:
+            return False
+        
+
+
+    def insert_essay_ans(self, question_id, user_id, user_answer):
+        sql = f'INSERT INTO essay_answer (question_id, user_id, written_answer) VALUES (%s, %s, %s)'
+        args = (question_id, user_id, user_answer)
+        try:
+            self.query(sql, *args) 
+            return True
+        except Exception as e:
+            print('error inserting: ', e)
+            return False
+        
+
+    def complete_quiz(self, quiz_id, user_id):
+        sql = f'INSERT INTO completed_quizzes (quiz_id, user_id) VALUES (%s, %s)'
+        args = (quiz_id, user_id)
+        try:
+            self.query(sql, *args) 
+            return True
+        except Exception as completequiz:
+            print('error inserting: ', completequiz)
+            return False
+        
+
+    def get_completed_quizes(self):
+        sql = f'SELECT * FROM completed_quizzes'
+        try:
+            return self.query(sql) 
+        except Exception as e:
+            print('error inserting: ', e)
+            return False
+        
+    def get_completed_quizes_by_ID(self, user_id):
+        sql = 'SELECT * FROM completed_quizzes WHERE user_id = %s'
+        args = (user_id,)
+        try:
+            return self.query(sql, *args)
+        except Exception as e:
+            print('error querying: ', e)
+            return False
+    
+    
+
+    #'SELECT cq.completed_quiz_id, cq.user_id, cq.quiz_id, q.question_id, q.question_text, q.answer_type, ua.written_answer, usc.choice_1, usc.choice_2, usc.choice_3, usc.choice_4, ans.status FROM completed_quizzes cq JOIN question q ON cq.quiz_id = q.quiz_id LEFT JOIN essay_answer ua ON q.question_id = ua.question_id AND ua.user_id = cq.user_id LEFT JOIN user_selected_choice usc ON q.question_id = usc.question_id AND usc.user_id = cq.user_id LEFT JOIN answer_status ans ON cq.completed_quiz_id = ans.completed_quiz_id AND q.question_id = ans.question_id WHERE cq.completed_quiz_id = %s;'
+    
+    #sql = f'SELECT cq.completed_quiz_id, cq.user_id, cq.quiz_id, q.question_id, q.question_text, q.answer_type, ua.written_answer, usc.choice_1, usc.choice_2, usc.choice_3, usc.choice_4 FROM completed_quizzes cq JOIN question q ON cq.quiz_id = q.quiz_id LEFT JOIN essay_answer ua ON q.question_id = ua.question_id AND ua.user_id = cq.user_id LEFT JOIN user_selected_choice usc ON q.question_id = usc.question_id AND usc.user_id = cq.user_id WHERE cq.completed_quiz_id = %s;'
+    #SELECT cq.completed_quiz_id, cq.user_id, cq.quiz_id, q.question_id, q.question_text, q.answer_type, ua.written_answer, usc.choice_1, usc.choice_2, usc.choice_3, usc.choice_4, ans.status FROM completed_quizzes cq JOIN question q ON cq.quiz_id = q.quiz_id LEFT JOIN essay_answer ua ON q.question_id = ua.question_id AND ua.user_id = cq.user_id LEFT JOIN user_selected_choice usc ON q.question_id = usc.question_id AND usc.user_id = cq.user_id LEFT JOIN answer_status ans ON cq.completed_quiz_id = ans.completed_quiz_id AND q.question_id = ans.question_id WHERE cq.completed_quiz_id = %s;
+    def get_completed_user_quiz(self, completed_quiz_id):
+        sql = f'SELECT cq.completed_quiz_id, cq.user_id, cq.quiz_id, q.question_id, q.question_text, q.answer_type, ua.written_answer, usc.choice_1, usc.choice_2, usc.choice_3, usc.choice_4, ans.status, ans.comment FROM completed_quizzes cq JOIN question q ON cq.quiz_id = q.quiz_id LEFT JOIN essay_answer ua ON q.question_id = ua.question_id AND ua.user_id = cq.user_id LEFT JOIN user_selected_choice usc ON q.question_id = usc.question_id AND usc.user_id = cq.user_id LEFT JOIN answer_status ans ON cq.completed_quiz_id = ans.completed_quiz_id AND q.question_id = ans.question_id WHERE cq.completed_quiz_id = %s;'
+
+        args = (completed_quiz_id,)
+        try:
+            return self.query(sql, *args) 
+        except Exception as e:
+            print('error inserting: ', e)
+            return False
+        
+    def get_completed_user_quiz_by_user_id(self, completed_quiz_id, user_id):
+        sql = f'SELECT cq.completed_quiz_id, cq.user_id, cq.quiz_id, q.question_id, q.question_text, q.answer_type, ua.written_answer, usc.choice_1, usc.choice_2, usc.choice_3, usc.choice_4, ans.status, ans.comment FROM completed_quizzes cq JOIN question q ON cq.quiz_id = q.quiz_id LEFT JOIN essay_answer ua ON q.question_id = ua.question_id AND ua.user_id = cq.user_id LEFT JOIN user_selected_choice usc ON q.question_id = usc.question_id AND usc.user_id = cq.user_id LEFT JOIN answer_status ans ON cq.completed_quiz_id = ans.completed_quiz_id AND q.question_id = ans.question_id WHERE cq.completed_quiz_id = %s and cq.user_id=%s;'
+        args = (completed_quiz_id, user_id)
+        try:
+            return self.query(sql, *args) 
+        except Exception as e:
+            print('error inserting: ', e)
+            return False
+    
+
+
+    def update_question_status(self, status, comment, completed_quiz_id, question_id):
+        sql = f'UPDATE answer_status SET status=%s, comment=%s where completed_quiz_id=%s and question_id=%s;'
+        args = (status, comment, completed_quiz_id, question_id)
+        try:
+            return self.query(sql, *args) 
+        except Exception as e:
+            print('error inserting: ', e)
+            return False
+
 
 
 

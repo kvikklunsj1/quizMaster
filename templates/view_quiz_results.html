@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quizmaster 2023 - Administrate quizes
+{% endblock %}
+
+{% block main %}
+
+<div class="outer-div">
+    <div class="inner-div">
+        <h3>Liste over gjennomførte quizer!</h3>
+        <table>
+            <thead>
+              <tr>
+                <th>Quiz ID</th>
+                <th>Completion date</th>
+                <th>Status</th>
+                <th>Review</th>
+              </tr>
+            </thead>
+            <tbody>
+            
+                {% for row in completed_quizzes %}
+                <tr>
+                    <td>{{ row[1] }}</td>
+                
+                    <td>{{ row[3] }}</td>
+                    <td> 
+                        {% if row.status == 1 %}
+                            Approved
+                        {% else %}
+                            Not Approved
+                        {% endif %}
+                    </td>
+                    <td><a href="{{ url_for('review_one_quiz_results', completed_quiz_id=row[0]) }}">Click here</a></td>
+                </tr>
+                {% endfor %}
+             
+            </tbody>
+          </table>
+     </div>
+</div> 
+
+<style>
+
+    .outer-div {
+        margin-top: 15%;
+    }
+    
+    table {
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+
+    th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid black;
+        }
+
+    
+    th {
+        background-color: gray;
+    }
+
+
+</style>
+
+{% endblock %}
+
